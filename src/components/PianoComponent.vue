@@ -18,8 +18,6 @@ const playNote = (note: string, octave: number) => {
 
 <template>
   <div>
-    <h1>Piano</h1>
-
     <div class="piano">
       <span class="octave" v-for="octave in octaves" v-bind:key="octave">
         <button
@@ -36,10 +34,6 @@ const playNote = (note: string, octave: number) => {
 </template>
 
 <style scoped>
-h1 {
-  color: var(--color-text);
-}
-
 .piano {
   display: flex;
   flex-direction: row;
