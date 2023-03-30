@@ -16,6 +16,7 @@
   "dependencies": {
     "date-fns": "^2.29.3",
     "pinia": "^2.0.28",
+    "tone": "^14.7.77",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
