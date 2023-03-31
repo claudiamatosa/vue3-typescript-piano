@@ -29,6 +29,17 @@ const playNote = (note: string, octave: number) => {
           {{ key }}
         </button>
       </span>
+
+      <!-- Add the first note in a higher octave to the end, so the piano feels
+           complete when played all the way through. -->
+      <span class="octave">
+        <button
+          class="key"
+          @click="playNote(keys[0], octaves[octaves.length - 1] + 1)"
+        >
+          {{ keys[0] }}
+        </button>
+      </span>
     </div>
   </div>
 </template>
