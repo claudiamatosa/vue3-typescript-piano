@@ -10,9 +10,12 @@ const isBlackKey = (key: string) => {
   return key.endsWith("#");
 };
 
-// https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
-const playNote = (note: string, octave: number) => {
-  synth.triggerAttackRelease(`${note}${octave}`, "8n");
+const startNote = (note: string, octave: number) => {
+  synth.triggerAttack(`${note}${octave}`);
+};
+
+const endNote = (note: string, octave: number) => {
+  synth.triggerRelease(`${note}${octave}`);
 };
 </script>
 
@@ -24,7 +27,8 @@ const playNote = (note: string, octave: number) => {
           :class="'key' + (isBlackKey(key) ? ' black' : '')"
           v-for="key in keys"
           v-bind:key="key"
-          @click="playNote(key, octave)"
+          @mousedown="startNote(key, octave)"
+          @mouseup="endNote(key, octave)"
         >
           {{ key }}
         </button>
@@ -35,7 +39,8 @@ const playNote = (note: string, octave: number) => {
       <span class="octave">
         <button
           class="key"
-          @click="playNote(keys[0], octaves[octaves.length - 1] + 1)"
+          @mousedown="startNote(keys[0], octaves[octaves.length - 1] + 1)"
+          @mouseup="endNote(keys[0], octaves[octaves.length - 1] + 1)"
         >
           {{ keys[0] }}
         </button>
