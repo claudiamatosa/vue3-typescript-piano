@@ -45,6 +45,12 @@ const endNote = (note: string, octave: number) => {
           {{ keys[0] }}
         </button>
       </span>
+
+      <!-- TODO: Add a key that doesn't exist and fix the bug using the help of tests -->
+      <!-- TODO: Throw an error if the dataset has a key that shouldn't have a sharp -->
+      <!-- TODO: Use flats also, instead of only sharps, and update the tests -->
+      <!-- TODO: A "unit" test that does not mock dependencies -->
+      <!-- TODO: Integration tests with playright -->
     </div>
   </div>
 </template>

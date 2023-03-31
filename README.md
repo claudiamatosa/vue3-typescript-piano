@@ -1,6 +1,9 @@
-# vue-ts-example
+# Piano in Vue 3 + Typescript
 
-This template should help get you started developing with Vue 3 in Vite.
+This is an example of how you can build a piano using Vue 3 and Typescript. I'm using it to demonstrate the difference between unit tests
+and end-to-end tests.
+
+Below are instructions from vue-ts-example, which is the template I used to create this project.
 
 ## Recommended IDE Setup
 
