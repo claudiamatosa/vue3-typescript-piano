@@ -39,7 +39,7 @@ const { startNote, endNote } = synth;
     <!-- TODO: Use flats also, instead of only sharps, and update the tests -->
     <!-- TODO: A "unit" test that does not mock dependencies -->
     <!-- TODO: Integration tests with playright -->
-    <!-- TODO: Refactor the code so the list of octaves is in a separate file -->
+    <!-- TODO: Refactor the code so the list of octaves is a prop instead of a fixed variable -->
     <!-- TODO: vitest UI: https://vitest.dev/guide/ui.html -->
     <!-- TODO: test runner (vitest) vs test libraries (vue-test-utils) -->
   </div>
