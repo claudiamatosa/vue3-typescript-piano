@@ -1,22 +1,10 @@
 <script setup lang="ts">
-import * as Tone from "tone";
-// import { ref } from 'vue';
+import { baseKeys, isBlackKey, useSynthetiser } from "../utils/tone";
 
 const octaves = [4, 5, 6];
-const keys = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-
-const isBlackKey = (key: string) => {
-  return key.endsWith("#");
-};
-
-const startNote = (note: string, octave: number) => {
-  synth.triggerAttack(`${note}${octave}`);
-};
-
-const endNote = (note: string, octave: number) => {
-  synth.triggerRelease(`${note}${octave}`);
-};
+const keys = baseKeys;
+const synth = useSynthetiser();
+const { startNote, endNote } = synth;
 </script>
 
 <template>
@@ -51,6 +39,7 @@ const endNote = (note: string, octave: number) => {
       <!-- TODO: Use flats also, instead of only sharps, and update the tests -->
       <!-- TODO: A "unit" test that does not mock dependencies -->
       <!-- TODO: Integration tests with playright -->
+      <!-- TODO: Refactor the code so the list of octaves is in a separate file -->
     </div>
   </div>
 </template>

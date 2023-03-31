@@ -60,7 +60,7 @@ describe("utils/tone", () => {
         expect(polySynthMock.triggerAttack).toHaveBeenCalledWith("C4");
       });
 
-      test('triggers a note on the provided octave and sharp', () => {
+      test("triggers a note on the provided octave and sharp", () => {
         const synth = useSynthetiser();
         synth.startNote("C#", "4");
         expect(polySynthMock.triggerAttack).toHaveBeenCalledWith("C#4");
