@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import PianoComponent from "../components/PianoComponent.vue";
+import PianoKeys from "../components/PianoKeys.vue";
 </script>
 
 <template>
   <main>
-    <PianoComponent />
+    <PianoKeys />
   </main>
 </template>
