@@ -17,9 +17,8 @@ test("displays three full octaves and a single note in the last octave in the pi
 
 test("clicking on a key makes the corresponding note", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator(".piano")).toBeVisible();
-  await expect(page.locator(".octave")).toHaveCount(4);
-  await expect(page.locator(".note")).toHaveCount(37);
-  await page.click(".note[data-note='C4']", { delay: 2000 });
-  await expect(page.locator("audio[data-note='C4']")).toHaveClass("active");
+
+  page.locator(".key[data-note='C4']").click({ delay: 2000 });
+  await expect(page.locator(".key[data-note='C4']")).toHaveClass("key active");
+  await expect(page.locator(".key[data-note='C4']")).toHaveClass("key");
 });
