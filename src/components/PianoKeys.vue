@@ -1,22 +1,51 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { baseKeys, isBlackKey, useSynthetiser } from "@/utils/tone";
 
 const octaves = [4, 5, 6];
 const keys = baseKeys;
 const synth = useSynthetiser();
 const { startNote, endNote } = synth;
+const activeKeys = ref<string[]>([]);
+
+const isKeyActive = (note: string, octave: number) =>
+  activeKeys.value.includes(note + octave);
+
+const getKeyClass = (note: string, octave: number) => ({
+  key: true,
+  black: isBlackKey(note),
+  active: isKeyActive(note, octave),
+});
+
+function playKey(note: string, octave: number) {
+  const key = note + octave;
+
+  if (!isKeyActive(note, octave)) {
+    startNote(note, octave);
+    activeKeys.value.push(key);
+  }
+}
+
+function stopKey(note: string, octave: number) {
+  const key = note + octave;
+
+  if (isKeyActive(note, octave)) {
+    endNote(note, octave);
+    activeKeys.value = activeKeys.value.filter((k) => k !== key);
+  }
+}
 </script>
 
 <template>
   <div class="piano">
     <span class="octave" v-for="octave in octaves" v-bind:key="octave">
       <button
-        :class="'key' + (isBlackKey(key) ? ' black' : '')"
+        :class="getKeyClass(key, octave)"
         :data-note="key + octave"
         v-for="key in keys"
         v-bind:key="key"
-        @mousedown="startNote(key, octave)"
-        @mouseup="endNote(key, octave)"
+        @mousedown="playKey(key, octave)"
+        @mouseup="stopKey(key, octave)"
       >
         {{ key }}
       </button>
@@ -26,7 +55,7 @@ const { startNote, endNote } = synth;
           complete when played all the way through. -->
     <span class="octave">
       <button
-        class="key"
+        :class="getKeyClass(keys[0], octaves[octaves.length - 1] + 1)"
         :data-note="keys[0] + (octaves[octaves.length - 1] + 1)"
         @mousedown="startNote(keys[0], octaves[octaves.length - 1] + 1)"
         @mouseup="endNote(keys[0], octaves[octaves.length - 1] + 1)"
@@ -79,6 +108,7 @@ const { startNote, endNote } = synth;
   cursor: pointer;
   position: relative;
   z-index: 1;
+  transition: color 0.2s ease-in-out;
 }
 
 .key.black {
@@ -91,5 +121,9 @@ const { startNote, endNote } = synth;
   left: -1.5em;
   margin-right: -3em;
   z-index: 2;
+}
+
+.key.active {
+  color: transparent;
 }
 </style>
