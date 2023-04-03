@@ -8,7 +8,7 @@ import PianoKeys from "./PianoKeys.vue";
 const startNoteMock = vi.fn();
 const endNoteMock = vi.fn();
 
-describe("components/PianoKeys", () => {
+describe("components/PianoKeys [integration]", () => {
   beforeEach(() => {
     vi.spyOn(tone, "useSynthetiser").mockImplementation(() => ({
       startNote: startNoteMock,
