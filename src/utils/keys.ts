@@ -1,6 +1,6 @@
 import { ref } from "vue";
-import { useSynthetiser } from "./tone";
 import { notes } from "@/data/notes";
+import { useSynthetiser } from "@/utils/tone";
 
 type Key = {
   note: string;
