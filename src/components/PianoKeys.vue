@@ -12,6 +12,7 @@ const { startNote, endNote } = synth;
     <span class="octave" v-for="octave in octaves" v-bind:key="octave">
       <button
         :class="'key' + (isBlackKey(key) ? ' black' : '')"
+        :data-note="key + octave"
         v-for="key in keys"
         v-bind:key="key"
         @mousedown="startNote(key, octave)"
@@ -26,6 +27,7 @@ const { startNote, endNote } = synth;
     <span class="octave">
       <button
         class="key"
+        :data-note="keys[0] + (octaves[octaves.length - 1] + 1)"
         @mousedown="startNote(keys[0], octaves[octaves.length - 1] + 1)"
         @mouseup="endNote(keys[0], octaves[octaves.length - 1] + 1)"
       >
