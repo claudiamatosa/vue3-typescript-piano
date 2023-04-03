@@ -1,43 +1,60 @@
-import { describe, beforeEach, expect, test, vi, afterEach } from "vitest";
+import { describe, expect, test, vi, beforeEach, afterEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import { render, fireEvent } from "@testing-library/vue";
-import * as tone from "@/utils/tone";
+import { useKeys } from "@/utils/keys";
 import PianoKeys from "./PianoKeys.vue";
 
-const startNoteMock = vi.fn();
-const endNoteMock = vi.fn();
+const keyboardMock = [
+  [
+    { note: "C", octave: 3 },
+    { note: "C#", octave: 3 },
+    { note: "D", octave: 3 },
+    { note: "D#", octave: 3 },
+    { note: "E", octave: 3 },
+    { note: "F", octave: 3 },
+    { note: "F#", octave: 3 },
+    { note: "G", octave: 3 },
+    { note: "G#", octave: 3 },
+    { note: "A", octave: 3 },
+    { note: "A#", octave: 3 },
+    { note: "B", octave: 3 },
+  ],
+  [{ note: "C", octave: 4 }],
+];
+
+const isKeyActiveMock = vi.fn();
+const playKeyMock = vi.fn();
+const stopKeyMock = vi.fn();
+
+const useKeysMock = () => ({
+  keyboardLayout: keyboardMock,
+  isKeyActive: isKeyActiveMock,
+  playKey: playKeyMock,
+  stopKey: stopKeyMock,
+});
+
+vi.mock("@/utils/keys", () => ({
+  useKeys: vi.fn(),
+}));
 
 describe("components/PianoKeys", () => {
   beforeEach(() => {
-    vi.spyOn(tone, "useSynthetiser").mockImplementation(() => ({
-      startNote: startNoteMock,
-      endNote: endNoteMock,
-    }));
-
-    // NOTE that: "isBlackKey" and "baseKeys" are not mocked. Why? And
-    // can we call it a unit test if we're not mocking the dependencies
-    // all the way through?
+    // @ts-ignore useKeys is mocked because we did it above
+    useKeys.mockImplementation(useKeysMock);
   });
 
   afterEach(() => {
-    startNoteMock.mockClear();
-    endNoteMock.mockClear();
+    playKeyMock.mockClear();
+    stopKeyMock.mockClear();
+    isKeyActiveMock.mockClear();
   });
 
-  test("renders a piano with three octaves", () => {
+  test("renders a piano with the keyboard layout provided by useKeys", () => {
     const wrapper = mount(PianoKeys);
     expect(wrapper).toBeDefined();
 
     const keys = wrapper.findAll(".key");
-    expect(keys).toHaveLength(37);
-  });
-
-  test("adds the first key in a higher octave at the end", () => {
-    const wrapper = mount(PianoKeys);
-    expect(wrapper).toBeDefined();
-
-    const keys = wrapper.findAll(".key");
-    expect(keys.at(36)?.text()).toEqual(tone.baseKeys[0].toString());
+    expect(keys).toHaveLength(13);
   });
 
   // It's important to organise your tests so they are readable by other people, and by your future self!
@@ -48,7 +65,7 @@ describe("components/PianoKeys", () => {
 
       const keys = wrapper.findAll(".key");
 
-      [1, 3, 6, 8, 10, 13, 15, 18, 20, 22, 25, 27, 30, 32, 34].forEach((i) => {
+      [1, 3, 6, 8, 10].forEach((i) => {
         expect(keys.at(i)?.classes()).toContain("black");
       });
     });
@@ -59,10 +76,7 @@ describe("components/PianoKeys", () => {
 
       const keys = wrapper.findAll(".key");
 
-      [
-        0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23, 24, 26, 28, 29, 31,
-        33, 35, 36,
-      ].forEach((i) => {
+      [0, 2, 4, 5, 7, 9, 11, 12].forEach((i) => {
         expect(keys.at(i)?.classes()).not.toContain("black");
       });
     });
@@ -72,10 +86,11 @@ describe("components/PianoKeys", () => {
     test("adds an extra class to black keys", () => {
       const { getAllByText } = render(PianoKeys);
 
-      tone.baseKeys
-        .filter((key) => key.endsWith("#"))
+      keyboardMock
+        .flat()
+        .filter((key) => key.note.endsWith("#"))
         .forEach((key) => {
-          getAllByText(key).forEach((keyElement) => {
+          getAllByText(key.note).forEach((keyElement) => {
             expect(keyElement.getAttribute("class")).toContain("black");
           });
         });
@@ -84,10 +99,11 @@ describe("components/PianoKeys", () => {
     test("does not add the class to white keys", () => {
       const { getAllByText } = render(PianoKeys);
 
-      tone.baseKeys
-        .filter((key) => !key.endsWith("#"))
+      keyboardMock
+        .flat()
+        .filter((key) => !key.note.endsWith("#"))
         .forEach((key) => {
-          getAllByText(key).forEach((keyElement) => {
+          getAllByText(key.note).forEach((keyElement) => {
             expect(keyElement.getAttribute("class")).not.toContain("black");
           });
         });
@@ -95,34 +111,34 @@ describe("components/PianoKeys", () => {
   });
 
   describe("interaction (using vue-test-utils)", () => {
-    test("calls startNote when the mouse clicks down on a note", async () => {
+    test("calls playKey when the mouse clicks down on a key", async () => {
       const wrapper = mount(PianoKeys);
       const key = await wrapper.findAll(".key").at(0);
       await key?.trigger("mousedown");
-      expect(startNoteMock).toHaveBeenCalledWith("C", 4);
+      expect(playKeyMock).toHaveBeenCalledWith("C", 3);
     });
 
-    test("calls endNote when the mouse is released on a note", async () => {
+    test("calls stopKey when the mouse is released on a key", async () => {
       const wrapper = mount(PianoKeys);
       const key = await wrapper.findAll(".key").at(6);
-      await key?.trigger("mousedown");
-      expect(startNoteMock).toHaveBeenCalledWith("F#", 4);
+      await key?.trigger("mouseup");
+      expect(stopKeyMock).toHaveBeenCalledWith("F#", 3);
     });
   });
 
   describe("interaction (testing library)", () => {
-    test("calls startNote when the mouse clicks down on a note", async () => {
+    test("calls playKey when the mouse clicks down on a key", async () => {
       const { getAllByText } = render(PianoKeys);
       const key = await getAllByText("C").at(0);
       await fireEvent.mouseDown(key as HTMLElement);
-      expect(startNoteMock).toHaveBeenCalledWith("C", 4);
+      expect(playKeyMock).toHaveBeenCalledWith("C", 3);
     });
 
-    test("calls endNote when the mouse is released on a note", async () => {
+    test("calls stopKey when the mouse is released on a key", async () => {
       const { getAllByText } = render(PianoKeys);
-      const key = await getAllByText("F#").at(1);
-      await fireEvent.mouseDown(key as HTMLElement);
-      expect(startNoteMock).toHaveBeenCalledWith("F#", 5);
+      const key = await getAllByText("F#").at(0);
+      await fireEvent.mouseUp(key as HTMLElement);
+      expect(stopKeyMock).toHaveBeenCalledWith("F#", 3);
     });
   });
 });

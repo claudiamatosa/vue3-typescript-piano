@@ -1,70 +1,35 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { baseKeys, isBlackKey, useSynthetiser } from "@/utils/tone";
+import { useKeys } from "@/utils/keys";
 
 const octaves = [4, 5, 6];
-const keys = baseKeys;
-const synth = useSynthetiser();
-const { startNote, endNote } = synth;
-const activeKeys = ref<string[]>([]);
-
-const isKeyActive = (note: string, octave: number) =>
-  activeKeys.value.includes(note + octave);
+const { keyboardLayout, isKeyActive, playKey, stopKey } = useKeys(octaves);
 
 const getKeyClass = (note: string, octave: number) => ({
   key: true,
-  black: isBlackKey(note),
+  black: !!note.endsWith("#"),
   active: isKeyActive(note, octave),
 });
-
-function playKey(note: string, octave: number) {
-  const key = note + octave;
-
-  if (!isKeyActive(note, octave)) {
-    startNote(note, octave);
-    activeKeys.value.push(key);
-  }
-}
-
-function stopKey(note: string, octave: number) {
-  const key = note + octave;
-
-  if (isKeyActive(note, octave)) {
-    endNote(note, octave);
-    activeKeys.value = activeKeys.value.filter((k) => k !== key);
-  }
-}
 </script>
 
 <template>
   <div class="piano">
-    <span class="octave" v-for="octave in octaves" v-bind:key="octave">
+    <span
+      class="octave"
+      v-for="octave in keyboardLayout"
+      v-bind:key="octave[0].octave"
+    >
       <button
-        :class="getKeyClass(key, octave)"
-        :data-note="key + octave"
-        v-for="key in keys"
-        v-bind:key="key"
-        @mousedown="playKey(key, octave)"
-        @mouseup="stopKey(key, octave)"
+        v-for="key in octave"
+        v-bind:key="key.note + key.octave"
+        :class="getKeyClass(key.note, key.octave)"
+        :data-key="key.note + key.octave"
+        @mousedown="playKey(key.note, key.octave)"
+        @mouseup="stopKey(key.note, key.octave)"
       >
-        {{ key }}
+        {{ key.note }}
       </button>
     </span>
 
-    <!-- Add the first note in a higher octave to the end, so the piano feels
-          complete when played all the way through. -->
-    <span class="octave">
-      <button
-        :class="getKeyClass(keys[0], octaves[octaves.length - 1] + 1)"
-        :data-note="keys[0] + (octaves[octaves.length - 1] + 1)"
-        @mousedown="startNote(keys[0], octaves[octaves.length - 1] + 1)"
-        @mouseup="endNote(keys[0], octaves[octaves.length - 1] + 1)"
-      >
-        {{ keys[0] }}
-      </button>
-    </span>
-
-    <!-- TODO: test ui with playwright -->
     <!-- TODO: Add a key that doesn't exist and fix the bug using the help of tests -->
     <!-- TODO: Throw an error if the dataset has a key that shouldn't have a sharp -->
     <!-- TODO: Use flats also, instead of only sharps, and update the tests -->

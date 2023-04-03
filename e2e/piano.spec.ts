@@ -8,17 +8,19 @@ test("displays a piano at the root url", async ({ page }) => {
   await expect(page.locator("div.piano")).toBeVisible();
 });
 
-test("displays three full octaves and a single note in the last octave in the piano", async ({ page }) => {
+test("displays three full octaves and a single note in the last octave in the piano", async ({
+  page,
+}) => {
   await page.goto("/");
   await expect(page.locator(".piano")).toBeVisible();
   await expect(page.locator(".octave")).toHaveCount(4);
   await expect(page.locator(".key")).toHaveCount(37);
 });
 
-test("clicking on a key makes the corresponding note", async ({ page }) => {
+test("clicking on a key activates it", async ({ page }) => {
   await page.goto("/");
 
-  page.locator(".key[data-note='C4']").click({ delay: 2000 });
-  await expect(page.locator(".key[data-note='C4']")).toHaveClass("key active");
-  await expect(page.locator(".key[data-note='C4']")).toHaveClass("key");
+  page.locator(".key[data-key='C4']").click({ delay: 2000 });
+  await expect(page.locator(".key[data-key='C4']")).toHaveClass("key active");
+  await expect(page.locator(".key[data-key='C4']")).toHaveClass("key");
 });
