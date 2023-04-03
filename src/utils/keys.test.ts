@@ -1,5 +1,4 @@
 import { describe, beforeEach, expect, test, vi, afterEach } from "vitest";
-import { notes } from "@/data/notes";
 import * as tone from "@/utils/tone";
 
 import { isBlackKey, createKeyboardLayout, useKeys } from "./keys";
